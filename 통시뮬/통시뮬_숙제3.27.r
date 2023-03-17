@@ -63,3 +63,4 @@ summary <- list(
    n * p * (1 - p) - var(test_2))
 )
 summary
+print(summary)
