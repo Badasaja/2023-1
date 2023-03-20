@@ -1,3 +1,6 @@
+###---------------------------------------------------###
+#Problems
+
 ### 1. Consider the binomial distribution with a parameter(n=5, p=0.2)
 ## (1) Generate 100 random numbers using the inverse transformation method
 
@@ -17,8 +20,6 @@ binom_inverse <- function(num, gvn_dist) {
   levels(temp) <- tags
   return(as.vector(sapply(as.vector(temp), as.double))) # nolint # nolint
   }
-
-
 ## (2) Generate 100 random numbers using the transformation method.
 
 # 베르누이 생성기 정의한다.
@@ -54,15 +55,6 @@ sample_dist <- cdf_maker(num_rand, n, p)
 test_1 <- binom_inverse(num_rand, sample_dist)
 test_2 <- binom_dist(num_rand, n, p)
 
-summary <- list(
-  "Theoretical mu,var" = c(n * p, n * p * (1 - p)) # nolint
-  , "Inverse method mu,var" = c(mean(test_1), var(test_1)) # nolint # nolint
-  , "Transformation method mu,var" = c(mean(test_2), var(test_2)) # nolint
-  , "mu deviation from Theory" = c(n * p - mean(test_1), n * p - mean(test_2))
-  , "var deviation from Theory" = c(n * p * (1 - p) - var(test_1),
-   n * p * (1 - p) - var(test_2))
-)
-summary
 
 ### 2. Generate 100 Poisson Numbers using inverse transformation method
 
@@ -93,13 +85,11 @@ return(poiss)
 n_rand <- 100
 lambda <- 2
 gen_result <- inv_pois(n_rand, lambda)
-
-summary <- list(
+summary2 <- list(
   "Theoretical mu,var" = c(lambda, lambda), # nolint
   "Computed mu, var" = c(mean(gen_result), var(gen_result) # nolint
   ))
-summary
-
+summary2
 ### 3. Consider the pdf of the random variable X as follows.
 
 ## (1) Generate 1,000 random numbers of X using inverse transformation method.
@@ -115,16 +105,16 @@ for (rand_unf in rand_unifs) {
     x_vec <- c(x_vec, x)
     }
 
-summary <- list(
+summary3_1 <- list(
   "mu" = mean(x_vec),
   "var" = var(x_vec)
 )
-summary
+summary3_1
 
 ## (2) Let Y=X^2. Estimate E(Y) and Var(Y) using the 1000 random numbrs.
 # the distribution of Y will simply be distribution of X^2
 
-y_vec <- round(sapply(x_vec, function(x) x^2),4)
+y_vec <- round(sapply(x_vec, function(x) x^2), 4)
 summary <- list(
   "mu" = mean(y_vec),
   "var" = var(y_vec)
@@ -155,8 +145,6 @@ n_rand <- 100
 #이때, c의 역수만큼. 즉, 1000개 넣으면 대략 640~660개정도가 accept.
 ar_dist <- function(n_rand, c_val) {
   x_vec <- c()
-  g_dist <- runif(n_rand)
-  u_dist <- runif(n_rand)
   i <- 0
   while (i < n_rand) {
     iters <- runif(1)
@@ -173,13 +161,11 @@ x_vec <- ar_dist(n_rand, c_val) #result of ar method
 x <- seq(0, 1, by = 0.001)
 y <- f_nond(x)
 hist(x_vec, freq = FALSE)
-lines(x, y, col = 'red')
+lines(x, y, col ='red')
 
 ## (3) estimate average number of trials
 ar_counter <- function (n_rand, c_val) {
   x_vec <- c()
-  g_dist <- runif(n_rand)
-  u_dist <- runif(n_rand)
   i <- 0
   trial_count <- 0
   while (i < n_rand) {
@@ -198,20 +184,20 @@ ar_counter(100, c_val)
 
 ### 5. Generate 200 random numbers with given u prime and cov mat.
 
-rmvn_eigen <- function(n, mu, sigma) {
+rmvn_chol <- function(n, mu, sigma) {
   #generate n random vectors from MVN(mu, sigma)
   #dimension is inferred from mu and sigma
   d <- length(mu) #length 2면 2차원 multivariate normal 생성.
-  #symmetric true then lower triangle is used. 어차피 covmat은 항상 symm. 
-  ev <- eigen(sigma, symmetric = TRUE)
-  lambda <- ev$values
-
-  V <- ev$vectors
-  R <- V%*%diag(sqrt(lambda))%*%t(V) #sqrt of covmat위해 대각화.
+  #chol returns lower triangular. seems to be updated.
+  chol_d <- chol(sigma)
   Z <- matrix(rnorm(n * d), nrow = n, ncol = d) #standard 생성.
-  X <- Z %*% R + matrix(mu, n, d, byrow = TRUE)
+  X <- Z %*% chol_d + matrix(mu, nrow = n, ncol = d, byrow = TRUE)
   return(X)
 }
-mu <- c(0,1)
-sigma <- matrix(c(1,.9,.9,1), nrow = 2, ncol = 2)
-sigma
+#choleski decomposition 사용하면, 안에서 분해 기법만 바뀐다.
+
+#Now, use pairs to make scatterplot.
+mu <- matrix(c(0, 1, 2))
+cov_mat <- matrix(c(1.0, -.5, .5, -.5, 1, -.5, .5, -.5, 1), nrow = length(mu))
+gvn_mults <- rmvn_chol(200, mu, cov_mat)
+pairs(gvn_mults)
