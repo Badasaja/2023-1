@@ -8,8 +8,8 @@ test_mat3
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rrf =function(gvn_mat){
   #1.스칼라배 연산 정의
-  mult_row = function(gvn_mat,gvn_row){
-    temp = gvn_mat[gvn_row,]
+  mult_row = function(gvn_mat, gvn_row) {
+    temp <- gvn_mat[gvn_row,]
     cond = temp!=0
     unit = 1/temp[cond][1]
     gvn_mat[gvn_row,]<-temp*unit

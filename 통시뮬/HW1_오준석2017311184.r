@@ -10,6 +10,7 @@ cdf_maker <- function(num, n, p) {
   cuts <- c(0, cumsum(as.vector(table(result)) / num))
   return(cuts)
   }
+a_cdf = cdf_maker(100, 5, 0.2)
 
 # based on the distribution info,
 # we generate inverse transformed binomial random v.
@@ -20,8 +21,9 @@ binom_inverse <- function(num, gvn_dist) {
   levels(temp) <- tags
   return(as.vector(sapply(as.vector(temp), as.double))) # nolint # nolint
   }
-## (2) Generate 100 random numbers using the transformation method.
+binom_inverse(100,a_cdf)
 
+## (2) Generate 100 random numbers using the transformation method.  
 # 베르누이 생성기 정의한다.
 bern_dist <- function(n, p) {
   rand_unifs <- runif(n)
@@ -45,19 +47,26 @@ binom_dist <- function(num_random, n, p) {
     }
   return(as.vector(result))
 }
+# rbinom에 n=1 넣으면 된다. 
 
-
-#(3) Calculate mean and variance for random numbers.
+##(3) Calculate mean and variance for random numbers.
 num_rand <- 100
 n <- 5
 p <- 0.2
 sample_dist <- cdf_maker(num_rand, n, p)
-test_1 <- binom_inverse(num_rand, sample_dist)
-test_2 <- binom_dist(num_rand, n, p)
+test_1 <- binom_inverse(num_rand, sample_dist) ; test_1
+test_2 <- binom_dist(num_rand, n, p) ; test_2
+
+
+summary1_3 <- list(
+  'method (1) mean,var' = c(mean(test_1), var(test_1)),
+  'method (2) mean,var' = c(mean(test_2), var(test_2)),
+  'theoretical mean,var' = c(n * p, n * p * (1 - p))
+)
+summary1_3
 
 
 ### 2. Generate 100 Poisson Numbers using inverse transformation method
-
 inv_pois <- function(n_rand, lambda) {
   rand_unifs <- runif(n_rand)
   y <- 0
@@ -85,18 +94,19 @@ return(poiss)
 n_rand <- 100
 lambda <- 2
 gen_result <- inv_pois(n_rand, lambda)
+gen_result
 summary2 <- list(
-  "Theoretical mu,var" = c(lambda, lambda), # nolint
-  "Computed mu, var" = c(mean(gen_result), var(gen_result) # nolint
+  "Theoretical mu,var" = c(lambda, lambda), 
+  "Computed mu, var" = c(mean(gen_result), var(gen_result) 
   ))
 summary2
+
+
+
 ### 3. Consider the pdf of the random variable X as follows.
-
 ## (1) Generate 1,000 random numbers of X using inverse transformation method.
-
-n_rand <- 100
+n_rand <- 1000
 rand_unifs <- runif(n_rand)
-
 x_vec <- c()
 for (rand_unf in rand_unifs) {
   #we gain root of the cdf of given distribution
@@ -104,6 +114,7 @@ for (rand_unf in rand_unifs) {
             lower = -1, upper = 1, tol = 0.0001)$root
     x_vec <- c(x_vec, x)
     }
+x_vec
 
 summary3_1 <- list(
   "mu" = mean(x_vec),
@@ -115,12 +126,12 @@ summary3_1
 # the distribution of Y will simply be distribution of X^2
 
 y_vec <- round(sapply(x_vec, function(x) x^2), 4)
-summary <- list(
+y_vec
+summary3_2 <- list(
   "mu" = mean(y_vec),
   "var" = var(y_vec)
 )
-summary
-
+summary3_2
 # check the distribution with cdf formula of y
 y_vec2 <- c()
 for (rand_unf in rand_unifs) {
@@ -129,6 +140,7 @@ for (rand_unf in rand_unifs) {
             lower = 0, upper = 1, tol = 0.0001)$root
     y_vec2 <- c(y_vec2, y)
     }
+
 
 ### 4. Suppose that we want to generate random numbers from gvn_dist
 ## (1) Obtain min c.
@@ -139,6 +151,7 @@ max_f <- uniroot(f_d, lower = 0, upper = 1)
 print("The minimum c is:")
 c_val <- f_nond(max_f$root)
 c_val
+
 ## (2) Using the acceptance-rejection method, compute 100 rand numbers.
 n_rand <- 100
 #accept-reject
@@ -157,7 +170,13 @@ ar_dist <- function(n_rand, c_val) {
   return(x_vec)
 }
 x_vec <- ar_dist(n_rand, c_val) #result of ar method
-#plot으로 확인
+
+summary4_2 <- list(
+  "mu" = mean(x_vec),
+  "var" = var(x_vec)
+)
+summary4_2
+#이거랑은 별개로 plot으로 육안 확인
 x <- seq(0, 1, by = 0.001)
 y <- f_nond(x)
 hist(x_vec, freq = FALSE)
@@ -183,7 +202,6 @@ ar_counter <- function (n_rand, c_val) {
 ar_counter(100, c_val)
 
 ### 5. Generate 200 random numbers with given u prime and cov mat.
-
 rmvn_chol <- function(n, mu, sigma) {
   #generate n random vectors from MVN(mu, sigma)
   #dimension is inferred from mu and sigma
