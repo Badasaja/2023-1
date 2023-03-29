@@ -16,23 +16,10 @@ z_solve = function(gvn_mat, x,y){
   return(result)
 }
 #def function 
-Ax_b = matrix(c(4,2,8,6,-2,3,3,5,-6,25,13,-4),nrow=3)
-Ax_b
-guess = c(1,1,1)
-#start_iter
-count = 1
-while(TRUE){
-guess[1]=x_solve(Ax_b,guess[2],guess[3])
-guess[2]=y_solve(Ax_b, guess[1],guess[3])
-guess[3]=z_solve(Ax_b, guess[1],guess[2])
-print(guess)
-count = count + 1
-if(count>100) break
-}
-guess
-A = Ax_b[,1:3]
-eigen(A)$values #이 중 최댓값이 1보다 작아야 한다. 
-seidel(A, Ax_b[,4])
+Ax_b = matrix(c(4,2,8,6,-2,3,3,5,-6),nrow=3)
+b = c(25,13,-4)
+z<-optR(Ax_b, b, method = 'gaussseidel',iter = 500,
+tol = 1e-7)
 
-
+seidel(Ax_b,  b)
 

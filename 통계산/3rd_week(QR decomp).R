@@ -1,7 +1,5 @@
 #test input zone
 A = matrix(c(2,5,1,3,5,1,9,-3,1),ncol = 3)
-res = QR_decomp(A)
-round(res$Q%*%res$R)
 
 #define QR_decomp
 QR_decomp=function(gvn_matrix){
