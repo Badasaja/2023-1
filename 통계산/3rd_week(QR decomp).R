@@ -32,4 +32,3 @@ QR_decomp=function(gvn_matrix){
   result = list(Q=round(Q,3),R=round(R,3))
   return(result)
 }
-
