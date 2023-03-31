@@ -150,8 +150,8 @@ gs_iter <- function(gvn_matrix, initial_guess, eps = 1e-10) {
     }
     #check if initial guess is vector
     if (!is.vector(x) || length(x) != grow) {
-        stop(paste("Please give a vector of length",
-                            grow, "for initial guess."))
+        print(paste("Wrong guess format, Iterate with zeros as initial guess."))
+        x <- rep(0, grow)
     }
 
     # Check if GS method converges
@@ -191,7 +191,6 @@ gs_iter <- function(gvn_matrix, initial_guess, eps = 1e-10) {
     return(x)
 }
 
-gs_iter(tm_8q, c(0,0,0))
 
 ### Question 9.
 ##Write the R code for QR decomposition for any A.
@@ -249,6 +248,7 @@ summary_a <- list(
     "Result of Q9_2----" = QR_decomp(qr_test2)
 )
 summary_a
+
 
 ####################################################################
 
