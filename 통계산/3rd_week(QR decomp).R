@@ -32,3 +32,18 @@ QR_decomp=function(gvn_matrix){
   result = list(Q=round(Q,3),R=round(R,3))
   return(result)
 }
+
+
+a<- (19*(41^2) + 29*(36^2))/48
+sqrt(a)
+
+100.83/5
+165/5
+
+data <- c(16,10,21,12,18,13,23,16,19,10,19,13,
+21,8,26,14,24,12,22,16,20,13,24,13)
+d_mat <- matrix(data, nrow = 4)
+apply(d_mat,1,mean)
+sum(d_mat[1, ])/6
+sqrt(5/6)*3.96
+seq_along(c(1:5))

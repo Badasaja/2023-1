@@ -1,5 +1,6 @@
 # 1. symmetric case->singular value equals eigenvalue
 A = matrix(c(4,8,10,8,10,-2,10,-2,2),nrow=3)
+A
 svd(A)
 
 d =diag(
