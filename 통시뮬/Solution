@@ -1,0 +1,131 @@
+#######################################
+# Statistical Simulation HW1 Solution #
+#######################################
+
+# Q1. ==============================================
+#(1)
+n=5
+p=0.2
+Fx=pbinom(0:n,n,p)
+X=NULL
+for (i in 1:100)
+{
+    U=runif(1)
+    X=c(X,sum(Fx < U))
+}
+X
+mean(X)
+var(X)
+
+#(2)
+Y=NULL
+for (i in 1:100)
+{
+ U=runif(n)
+ Y=c(Y,sum(U < p))
+}
+mean(Y)
+var(Y)
+# (3)
+# Theoretic mean = 1 & variance = 5*.2*.8 = .8
+# Q2. ==============================================
+lambda = 2
+n = 100
+u = runif(n)
+x = 0
+px0 = Fx0 = 0
+px1 = Fx1 = dpois(x,lambda)
+y = rep(NA,n)
+while (n > 0)
+{
+ idx = which(u > Fx0 & u <= Fx1)
+ y[idx] = x
+ n = n - length(idx)
+ px0 = px1
+ px1 = (lambda / (x+1)) * px0
+ Fx0 = Fx1
+ Fx1 = Fx0 + px1
+ x = x + 1
+ }
+mean(y)
+var(y)
+# Theoretical mean and variance = lambda = 2.
+
+# Q3. ==============================================
+# F(x) = (x+1)^2 / 4
+# X = sqrt(4U) - 1
+# (1)
+n = 10000
+U = runif(n)
+X = sqrt(4*U) - 1
+mean(X)
+var(X)
+# True E(X) = 1/3 = 0.333... Var(X)= 2/9 = 0.222...
+# (2)
+Y = X^2
+mean(Y)
+var(Y)
+
+> # Q4. ==============================================
+>
+> #(1)
+> # optimal c = 1.5 or 3/2
+>
+#(2)
+n = 100
+N = 0
+Trials = 0
+x = NULL
+while(N <= n)
+{
+    Y = runif(n)
+    U = runif(n)
+    C = 4*Y*(1-Y)
+    x = c(x,Y[U <= C])
+    N = length(x)
+    Trials = Trials + n
+    if (N > n) {
+        x = x[1:n]
+        last.loc = which(Y == x[n])
+        Trials = Trials - (n-last.loc)
+        }
+}
+
+#(3)
+T / 100
+# It should be approximately 1.5 because the optimal c = 1.5.
+# Q5. ==============================================
+
+rmvn.chol = function(n, mu, Sigma){
+ # generate n random vectors from MVN(mu, Sigma)
+ # dimension is inferred from mu and Sigma
+ d = length(mu)
+ U= chol(Sigma)
+ Z = matrix(rnorm(n*d), nrow = n, ncol = d)
+ X = Z %*% U + matrix(mu, n, d, byrow = TRUE)
+ return(X)
+ }
+
+rmvn.eigen = function(n, mu, Sigma, method = 'Spectral')
+{
+  # generate n random vectors from MVN(mu, Sigma)
+  # dimension is inferred from mu and Sigma
+  d = length(mu)
+  if (method == 'Spectral') {
+      ev = eigen(Sigma, symmetric = TRUE)
+      lambda = ev$values
+      V = ev$vectors
+      R = V %*% diag(sqrt(lambda)) %*% t(V)
+  }else {
+      R <- t(chol(Sigma))
+    }
+  Z = matrix(rnorm(n*d), nrow = n, ncol = d)
+  X = Z %*% R + matrix(mu, n, d, byrow = TRUE)
+  return(X)
+}
+
+
+mu=c(0,1,2)
+Sigma=matrix(c(1,-0.5,0.5,-0.5,1,-0.5,0.5,-0.5,1),nrow=3,ncol=3,byrow=T)
+plot(rmvn.eigen(1000, mu, Sigma))
+plot(rmvn.eigen(1000, mu, Sigma, 'x'))

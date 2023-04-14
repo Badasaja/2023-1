@@ -47,7 +47,7 @@ binom_dist <- function(num_random, n, p) {
     }
   return(as.vector(result))
 }
-# rbinom에 n=1 넣으면 된다. 
+# rbinom에 n=1 넣으면 된다.
 
 ##(3) Calculate mean and variance for random numbers.
 num_rand <- 100
@@ -206,7 +206,6 @@ rmvn_chol <- function(n, mu, sigma) {
   #generate n random vectors from MVN(mu, sigma)
   #dimension is inferred from mu and sigma
   d <- length(mu) #length 2면 2차원 multivariate normal 생성.
-  #chol returns lower triangular. seems to be updated.
   chol_d <- chol(sigma)
   Z <- matrix(rnorm(n * d), nrow = n, ncol = d) #standard 생성.
   X <- Z %*% chol_d + matrix(mu, nrow = n, ncol = d, byrow = TRUE)
@@ -217,5 +216,8 @@ rmvn_chol <- function(n, mu, sigma) {
 #Now, use pairs to make scatterplot.
 mu <- matrix(c(0, 1, 2))
 cov_mat <- matrix(c(1.0, -.5, .5, -.5, 1, -.5, .5, -.5, 1), nrow = length(mu))
+cov_mat
 gvn_mults <- rmvn_chol(200, mu, cov_mat)
 pairs(gvn_mults)
+
+t(chol(cov_mat))
