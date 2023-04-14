@@ -104,4 +104,3 @@ bound_func <- function(n) {87 / n^2}
 lines(n_set, bound_func(n_set))
 
 ###
-Guss_quad <- function(f, a, b

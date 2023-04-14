@@ -103,5 +103,73 @@ plot(n_set, error, type = 'b', ylim = c(0, 0.1),
 bound_func <- function(n) {87 / n^2}
 lines(n_set, bound_func(n_set))
 
-###
-Guss_quad <- function(f, a, b
+#### SIMPSONS RULE.
+
+### function estimation 하는거.
+func_y <- function(x, n) {x ^ n}
+c1 <- func_y(c(0, 2, 4), n = 0)
+c2 <- func_y(c(0, 2, 4), n = 1)
+c3 <- func_y(c(0, 2, 4), n = 2)
+
+coef <- cbind(c1, c2, c3) # A
+y_val <- dnorm(c(0, 2, 4)) # b
+# x
+x_val <- solve(coef, y_val)
+approx_fun <- function(x) {x_val[1] + x_val[2] * x + x_val[3] * x^2}
+
+x_points <- seq(0, 4, by = 0.001)
+y_points <- dnorm(x_points)
+
+plot(x_points, y_points, type = "l")
+curve(approx_fun, 0, 4, add = TRUE, lty = 2, col = "blue")
+
+for (x in c(0, 2, 4)){
+    points(x, 0, pch = 19)
+    points(x, dnorm(x), pch = 19)
+}
+abline(h = 0)
+axis(side = 1, at = c(0, 2, 4), labels = c("a", "(a+b)/2", "b"), cex.axis = 2)
+legend(2, 0.4, legend = c("f(x)"))
+
+###Simpson's Rule
+
+Simpson_rule <- function(f, a, b, n, print = TRUE){
+    if (n %%2 != 0){
+        return("Choose an even integer n!")
+    }
+    if (n < 5){
+        return("Choose a larger integer n!")
+    }
+    x0 <- min(a, b)
+    xn <- max(a, b)
+    h <- (xn - x0) / n #n은 짝수.
+    x_seq <- seq(x0, xn, h) #구간 2개당 bound 3개 생김
+    integral <- 0
+    for (k in seq(0, n - 2, 2)){
+        integral <- integral + h / 3 * (f(x_seq[k + 1])
+            + 4 * f(x_seq[k + 2]) + f(x_seq[k + 3]))
+        }
+    if (print == TRUE) {
+        print(paste("Simpson gives", integral))
+    }
+    return(integral = integral)
+    }
+    
+
+}
+## Example
+func_y <- function(x) {x^2 - 2*x + 4}
+Trapezoidal(func_y, 1, 2, 100)
+Simpson_rule(func_y, 1, 2, 100)
+
+## Example 2
+int_func_y <- function(x) {(1/3)*x^3 - x^2 + 4*x}
+n_set <- seq(6, 100, by = 4)
+trap_errors <- sapply(n_set, Trapezoidal, f = func_y, a = 1, b = 2) -
+    (int_func_y(2) - int_func_y(1))
+simp_errors <- sapply(n_set, Simpson_rule, f = func_y, a = 1, b = 2, print = FALSE) -
+    (int_func_y(2) - int_func_y(1))
+plot(n_set, trap_errors)
+points(n_set, simp_errors, pch = 19)
+legend(40, 0.003, legend = c("Trapezoidal", "Simpson"), 
+    lty = c(1, 19), cex = 2.5)

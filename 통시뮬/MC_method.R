@@ -73,11 +73,11 @@ hist(theta.j)
 # 95% CI for theta
 a = seq(0.001,0.049,0.001) #옮기는 시작점, 0.001씩 95% 유지하면서 이동. 
 CI = NULL
-# grid search해서. 하나씩 옮기면서, 
+# grid search해서. 하나씩 옮기면서,
 for (k in a)
 {
-  conf = quantile(theta.j, prob=c(k,(0.95+k)))
-  CI = rbind(CI,conf) 
+  conf = quantile(theta.j, prob = c(k, (0.95 + k)))
+  CI = rbind(CI, conf)
 }
 
 leng = CI[,2] - CI[,1]
@@ -167,7 +167,8 @@ n = length(X1)
 Y = 1 - 0.5 * X1 + 0.7 * X2  + rnorm(n,sd=10)
 dat = data.frame(Y,X1,X2)
 
-
+##이 위는 모르고, pseudo population만 있는 상태
+##pseudo의 베타값들로 랜덤 데이터를 만들어내야 한다
 # Estimation
 fit = lm(Y ~ X1 + X2)
 summary(fit)
@@ -179,7 +180,7 @@ V.bhat = sigma2 * solve(t(X) %*% X) #공식으로 나온거
 T = b.hat[2]/ sqrt(V.bhat[2,2])
 
 
-# S.E. & CI for beta
+# S.E. & CI for beta (empirical CI)
 m = 1000
 b1 =numeric(m)
 EY = NULL
@@ -188,17 +189,17 @@ for (j in 1:m)
   #null하의 distribution -> b.hat은 유효하다.
   Y.star = b.hat[1] + b.hat[2] * X1 + b.hat[3] * X2 + rnorm(n,sd=sqrt(sigma2))
   fit1 = lm(Y.star ~ X1 + X2)
-  b1[j] = fit1$coefficients[2] #null 하 fitting한 coefficients들이 true beta를 포함하는가? 
-  Yhat = fit1$coefficients[1] + fit1$coefficients[2]*X1 + fit1$coefficients[3]*X2
-  EY = rbind(EY,Yhat)
+  b1[j] = fit1$coefficients[2] 
+  #null 하 fitting한 coefficients들이 true beta를 포함하는가? 
+  Yhat = fit1$coefficients[1] +
+    fit1$coefficients[2]*X1 + fit1$coefficients[3]*X2
+  EY = rbind(EY, Yhat)
 }
 
 sd(b1) #위에 공식으로 나온거랑 비교.
-
 quantile(b1,prob=c(0.025,0.975))
-
 apply(EY,2,quantile,prob=c(0.025,0.975))
-#이제 true beta값이 이 interval안에 포함되는지. 
+#이제 true beta값이 이 interval안에 포함되는지 확인. 
 
 
 # Prediction interval for E(Y|X=c(10, 110))
